@@ -7,7 +7,7 @@ date
 anyscale down $session_name
 date
 echo "Starting ..."
-anyscale up $session_name
+anyscale up --cloud-name=anyscale_default_cloud $session_name
 date
 anyscale exec -n $session_name 'cat something.txt'
 date
