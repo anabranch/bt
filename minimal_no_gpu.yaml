@@ -1,5 +1,5 @@
-min_workers: 2
-max_workers: 2
+min_workers: 3
+max_workers: 3
 
 docker:
     image: anyscale/ray-ml:latest
@@ -20,8 +20,8 @@ idle_timeout_minutes: 5
 # Cloud-provider specific configuration.
 provider:
     type: aws
-    region: us-west-2
-    availability_zone: us-west-2a
+    region: us-east-1
+    availability_zone: us-east-1a
 
 
 worker_nodes:

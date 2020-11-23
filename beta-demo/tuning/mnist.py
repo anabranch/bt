@@ -56,13 +56,16 @@ if __name__ == "__main__":
 
     ray.init()
     print("Starting Training")
+
     gpu_resources = 0
-    if "GPU" in ray.available_resources():
+    if "GPU" in ray.cluster_resources():
         print("GPU ENABLED")
         gpu_resources = 0.1
 
+    print(gpu_resources)
+
     trainable_cls = DistributedTrainableCreator(
-        train_mnist, n_workers, 1, gpu_resources
+        train_mnist, bool(gpu_resources), n_workers, 1
     )
     tune.run(
         trainable_cls,

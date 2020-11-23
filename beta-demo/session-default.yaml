@@ -1,16 +1,15 @@
-min_workers: 1
+min_workers: 2
 max_workers: 2
 
 docker:
-    image: anyscale/ray-ml:latest-gpu
+    image: anyscale/ray-ml:latest
     container_name: ray_container
     pull_before_run: False
 
-setup_commands:
-    - pip install ray torch torchvision tabulate tensorboard
-    - pip install -r /root/demos-bill/requirements.txt
-
 head_setup_commands: []
+
+setup_commands:
+    - pip install -U https://s3-us-west-2.amazonaws.com/ray-wheels/master/ac9610b19def11c9a276cfbc474793697198f238/ray-1.1.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl
 
 target_utilization_fraction: 0.8
 
@@ -21,14 +20,12 @@ idle_timeout_minutes: 5
 # Cloud-provider specific configuration.
 provider:
     type: aws
-    region: us-west-2
-    availability_zone: us-west-2a
+    region: us-west-1
+    availability_zone: us-east-1a
 
 
 worker_nodes:
-    InstanceType: p2.xlarge
-    InstanceMarketOptions:
-        MarketType: spot
+    InstanceType: m5.2xlarge
 
 # How Ray will authenticate with newly launched nodes.
 auth:
