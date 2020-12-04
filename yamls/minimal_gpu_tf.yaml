@@ -3,6 +3,8 @@ max_workers: 1
 
 docker: 
     image: anyscale/ray-ml:latest-cpu
+    head_image: anyscale/ray-ml:latest-cpu
+    worker_image: anyscale/ray-ml:latest-gpu
     container_name: ray_container
     pull_before_run: False
 
@@ -10,21 +12,18 @@ head_setup_commands: []
 
 setup_commands:
     - pip install -U ray
-    - pip uninstall dataclasses
+    - pip install tensorflow
 
-target_utilization_fraction: 0.8
 
-# If a node is idle for this many minutes, it will be removed. A node is
-# considered idle if there are no tasks or actors running on it.
+worker_setup_commands:
+    - apt-get install -y libcudnn7=7.6.5.32-1+cuda10.1 libcudnn7-dev=7.6.5.32-1+cuda10.1
+
 idle_timeout_minutes: 5
 
-# Cloud-provider specific configuration.
 provider:
     type: aws
     region: us-west-2
     availability_zone: us-west-2a
 
-
 worker_nodes:
-    InstanceType: m5.2xlarge
-
+    InstanceType: p2.xlarge

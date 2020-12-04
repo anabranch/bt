@@ -3,6 +3,8 @@ max_workers: 1
 
 docker: 
     image: anyscale/ray-ml:latest-cpu
+    head_image: anyscale/ray-ml:latest-cpu
+    worker_image: anyscale/ray-ml:latest-gpu
     container_name: ray_container
     pull_before_run: False
 
@@ -10,7 +12,10 @@ head_setup_commands: []
 
 setup_commands:
     - pip install -U ray
+    - pip install tensorflow
     - pip uninstall dataclasses
+    - apt-get install -y libcudnn7=7.6.5.32-1+cuda10.1
+
 
 target_utilization_fraction: 0.8
 
@@ -26,5 +31,10 @@ provider:
 
 
 worker_nodes:
-    InstanceType: m5.2xlarge
+    InstanceType: p2.xlarge
+    InstanceMarketOptions:
+        MarketType: spot
 
+# How Ray will authenticate with newly launched nodes.
+auth:
+    ssh_user: ubuntu

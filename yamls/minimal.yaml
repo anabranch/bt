@@ -1,5 +1,5 @@
-min_workers: 2
-max_workers: 2
+min_workers: 1
+max_workers: 1
 
 docker: 
     image: anyscale/ray-ml:latest-cpu
@@ -12,6 +12,7 @@ head_setup_commands: []
 
 setup_commands:
     - pip install -U https://s3-us-west-2.amazonaws.com/ray-wheels/master/ac9610b19def11c9a276cfbc474793697198f238/ray-1.1.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl
+    - pip uninstall dataclasses
 
 target_utilization_fraction: 0.8
 
@@ -34,3 +35,15 @@ worker_nodes:
 # How Ray will authenticate with newly launched nodes.
 auth:
     ssh_user: ubuntu
+
+worker_start_ray_commands:
+    - conda create -n test pip
+    - conda activate test
+    - pip install plotly ray
+    - ray stop
+    - >-
+      ulimit -n 65536;
+      conda activate test;
+      ray start
+      --address=$RAY_HEAD_IP:6379
+      --object-manager-port=8076
