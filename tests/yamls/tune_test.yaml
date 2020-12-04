@@ -1,0 +1,34 @@
+min_workers: 0
+max_workers: 5
+
+docker: 
+    image: anyscale/ray-ml:latest-cpu
+    head_image: anyscale/ray-ml:latest-cpu
+    worker_image: anyscale/ray-ml:latest-gpu
+    container_name: ray_container
+    pull_before_run: False
+
+head_setup_commands: []
+
+# If a node is idle for this many minutes, it will be removed. A node is
+# considered idle if there are no tasks or actors running on it.
+idle_timeout_minutes: 5
+
+# Cloud-provider specific configuration.
+provider:
+    type: aws
+    region: us-west-2
+    availability_zone: us-west-2a,us-west-2b,us-west-2c,us-west-2d
+
+worker_nodes:
+    InstanceType: p2.xlarge
+    InstanceMarketOptions:
+        MarketType: spot
+
+setup_commands:
+    - pip install -U torch torchvision
+    - pip install -U https://s3-us-west-2.amazonaws.com/ray-wheels/master/ac9610b19def11c9a276cfbc474793697198f238/ray-1.1.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl
+
+# How Ray will authenticate with newly launched nodes.
+auth:
+    ssh_user: ubuntu
