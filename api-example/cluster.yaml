@@ -1,0 +1,22 @@
+min_workers: 1
+max_workers: 10
+
+docker:
+    image: anyscale/ray-ml:latest-cpu
+    container_name: ray_container
+    pull_before_run: False
+
+head_setup_commands: []
+setup_commands:
+    - pip install -U ray[serve]
+    - pip uninstall dataclasses
+
+target_utilization_fraction: 0.8
+idle_timeout_minutes: 5
+
+provider:
+    type: aws
+    region: us-west-2
+    availability_zone: us-west-2a
+worker_nodes:
+    InstanceType: m5.2xlarge
