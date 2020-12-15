@@ -8,8 +8,10 @@ docker:
 
 head_setup_commands: []
 setup_commands:
-    - pip install -U ray[serve]
+    - pip install -U https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-1.1.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl
     - pip uninstall dataclasses
+
+# - pip install ray==1.0.1.post1
 
 target_utilization_fraction: 0.8
 idle_timeout_minutes: 5

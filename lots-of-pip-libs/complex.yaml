@@ -1,0 +1,59 @@
+# anyscale up complex-yaml --config complex.yaml --cloud-name anyscale_legacy_apse2
+min_workers: 0
+max_workers: 4
+
+docker:
+    image: anyscale/ray-ml:latest-gpu
+    container_name: ray_container
+    pull_before_run: False
+
+head_node:
+    InstanceType: r5.xlarge
+    IamInstanceProfile:
+        Arn: 'arn:aws:iam::959243851260:instance-profile/ray-autoscaler-v1'
+worker_nodes:
+    InstanceType: r5.xlarge
+    IamInstanceProfile:
+        Arn: 'arn:aws:iam::959243851260:instance-profile/ray-autoscaler-v1'
+
+setup_commands:
+    - >-
+      pip uninstall typing -y;
+      mkdir -p ~/.ssh/;
+      pip install -U awscli;
+      rm -rf /root/anaconda3/lib/python3.7/site-packages/ruamel* || true;
+      pip install -r /project/requirements.txt;
+      pip install 'pandas<1.0.4,>=0.24';
+      cd /project && python -c 'import black; black.CACHE_DIR.mkdir(parents=True, exist_ok=True)';
+      pip install --upgrade git+https://github.com/intake/filesystem_spec;
+      ray stop --force -v;
+      sleep 5;
+
+target_utilization_fraction: 0.8
+
+head_start_ray_commands:
+    - >-
+      ray stop --force -v; sleep 5;
+      ulimit -n 65536; ray start --head --port=6379 --object-manager-port=8076 --autoscaling-config=~/ray_bootstrap_config.yaml;
+
+worker_start_ray_commands:
+    - >-
+      ray stop --force -v; sleep 5;
+      ulimit -n 65536; ray start --address=$RAY_HEAD_IP:6379 --object-manager-port=8076;
+
+# If a node is idle for this many minutes, it will be removed. A node is
+# considered idle if there are no tasks or actors running on it.
+idle_timeout_minutes: 5
+
+# Cloud-provider specific configuration.
+provider:
+    type: aws
+    region: ap-southeast-2
+    cache_stopped_nodes: true
+
+auth:
+    ssh_user: ubuntu
+
+metadata:
+    anyscale:
+        working_dir: /project
